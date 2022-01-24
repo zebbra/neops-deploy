@@ -1,0 +1,11 @@
+- name: create container networks
+  community.docker.docker_network:
+    name: "{{ item }}"
+    driver: bridge
+    internal: no
+    attachable: yes
+  loop:
+    - "{{ neops_container_network.public }}"
+    - "{{ neops_container_network.core }}"
+    - "{{ neops_container_network.keycloak }}"
+    - "{{ neops_container_network.kea }}"

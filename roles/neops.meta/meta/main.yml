@@ -1,0 +1,10 @@
+dependencies:
+    - neops.docker
+    - neops.user
+    - neops.docker-registry
+    - neops.container-common
+    - neops.traefik
+    - neops.keycloak
+    - neops.core
+    - neops.kea
+    - neops.tftp

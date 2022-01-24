@@ -1,0 +1,14 @@
+neops_kea_enabled: false
+neops_kea_image: quay.io/zebbra/neops-kea-dhcp
+neops_kea_image_tag: latest
+neops_kea_debug: false
+neops_kea_tftp_ip: ""
+neops_kea_dns_ip: ""
+neops_kea_api_url: ""
+neops_kea_api_key: ""
+neops_kea_unique_task: staging.init
+neops_kea_devices_default_username: staging
+neops_kea_devices_default_pw: staging
+neops_kea_hook_debug: false
+neops_kea_additional_information: false
+neops_kea_hostname_startswith: "neops-init"

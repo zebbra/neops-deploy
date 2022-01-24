@@ -1,0 +1,8 @@
+embed-server --admin-only=true --server-config=standalone-ha.xml
+/subsystem=keycloak-server/spi=truststore/:add
+/subsystem=keycloak-server/spi=truststore/provider=file/:add(enabled=true)
+/subsystem=keycloak-server/spi=truststore/provider=file/:map-put(name=properties,key=file,value=/opt/jboss/keycloak/standalone/configuration/keystores/customca.jks)
+/subsystem=keycloak-server/spi=truststore/provider=file/:map-put(name=properties,key=password,value=changeit)
+/subsystem=keycloak-server/spi=truststore/provider=file/:map-put(name=properties,key=hostname-verification-policy,value=WILDCARD)
+/subsystem=keycloak-server/spi=truststore/provider=file/:map-put(name=properties,key=disabled,value=false)
+stop-embedded-server

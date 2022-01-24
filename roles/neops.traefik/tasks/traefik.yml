@@ -1,0 +1,60 @@
+- name: copy traefik config file
+  template:
+    src: certs.yml.j2
+    dest: "{{ neops_container_data }}/traefik/certs.yml"
+    owner: "{{ neops_system_user }}"
+    group: "{{ neops_system_group }}"
+    mode: 0644
+
+- name: create traefik container
+  community.docker.docker_container:
+    name: "{{ neops_container_prefix }}traefik"
+    image: "{{ neops_traefik_image }}:{{ neops_traefik_image_tag }}"
+    container_default_behavior: no_defaults
+
+    ports:
+      - "80:80"
+      - "443:443"
+
+    command:
+      - --entrypoints.http.address=:80
+      - --entrypoints.https.address=:443
+      - --providers.docker.exposedByDefault=false
+      - --log.level=DEBUG
+      - --api=true
+      - --api.dashboard=true
+      - --providers.file.filename=/etc/traefik/certs.yml
+      - --providers.file.watch=true
+
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.traefik-dashboard-http-router.entrypoints: http
+      traefik.http.routers.traefik-dashboard-http-router.rule: Host(`{{ neops_hostname.traefik }}`)
+      traefik.http.middlewares.traefik-dashboard-redirect.redirectscheme.scheme: https
+      traefik.http.routers.traefik-dashboard-http-router.middlewares: traefik-dashboard-redirect
+      traefik.http.middlewares.traefik-dashboard-auth.basicauth.users: "{{ neops_traefik_dashboard_user }}:{{ neops_traefik_dashboard_password | password_hash('bcrypt', 65534 | random(seed=inventory_hostname) | hash('sha256') | string | truncate(22)) }}"
+      traefik.http.routers.traefik-dashboard-https-router.middlewares: traefik-dashboard-auth
+      traefik.http.routers.traefik-dashboard-https-router.service: api@internal
+      traefik.http.routers.traefik-dashboard-https-router.entrypoints: https
+      traefik.http.routers.traefik-dashboard-https-router.tls: "true"
+      traefik.http.routers.traefik-dashboard-https-router.rule: Host(`{{ neops_hostname.traefik }}`)
+
+    env:
+      no_proxy: "*"
+      NO_PROXY: "*"
+
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "{{ neops_container_data }}/traefik/certs/:/etc/traefik/certs/:ro"
+      - "{{ neops_container_data }}/traefik/certs.yml:/etc/traefik/certs.yml"
+
+    network_mode: "{{ neops_container_network.public }}"
+    networks:
+      - name: "{{ neops_container_network.public }}"
+    purge_networks: yes
+
+    restart_policy: always
+    state: started
+    pull: yes
+    #recreate: yes
+    #restart: yes

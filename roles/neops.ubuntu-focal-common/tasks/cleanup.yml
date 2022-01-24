@@ -1,0 +1,22 @@
+---
+- name: remove packages
+  apt:
+    pkg: "{{ neops_ubuntu_focal_cleanup_packages }}"
+    state: absent
+    purge: yes
+- name: disable service startup
+  systemd:
+    name: "{{ item }}"
+    state: stopped
+    enabled: false
+    masked: true
+  loop: "{{ neops_ubuntu_focal_disable_services }}"
+  ignore_errors: true
+- name: autoclean/remove unused packages
+  apt:
+    autoclean: yes
+    autoremove: yes
+- name: force autoremove
+  command:
+    cmd: /usr/bin/apt autoremove -y
+  ignore_errors: true

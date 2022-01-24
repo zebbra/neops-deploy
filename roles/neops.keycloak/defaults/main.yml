@@ -1,0 +1,11 @@
+neops_keycloak_enabled: false
+neops_keycloak_image: jboss/keycloak
+neops_keycloak_image_tag: 10.0.2
+neops_keycloak_admin_user: admin
+neops_keycloak_admin_password: "{{ undef(hint='Please specify keycloak admin password') }}"
+
+neops_keycloak_postgres_image: postgres
+neops_keycloak_postgres_image_tag: 11-alpine
+neops_keycloak_postgres_db: keycloak
+neops_keycloak_postgres_user: keycloak
+neops_keycloak_postgres_password: "{{ undef(hint='Please specify keycloak postgres password') }}"

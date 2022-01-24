@@ -1,0 +1,9 @@
+---
+# default packages
+- name: install misc packages
+  apt:
+    pkg: "{{ neops_ubuntu_focal_default_packages + neops_ubuntu_focal_additional_packages }}"
+    update_cache: yes
+    state: latest
+    cache_valid_time: 3600
+

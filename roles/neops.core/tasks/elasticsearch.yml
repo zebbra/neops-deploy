@@ -1,0 +1,42 @@
+- name: create elasticsearch data dir
+  file:
+    path: "{{ neops_container_data }}/neops/elasticsearch"
+    # https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html
+    # By default, Elasticsearch runs inside the container as user elasticsearch using uid:gid 1000:0.
+    owner: "{{ neops_system_user }}"
+    group: root
+    mode: 0770
+    state: directory
+
+- name: create elasticsearch container
+  become: yes
+  become_user: "{{ neops_system_user }}"
+  community.docker.docker_container:
+    name: "{{ neops_container_prefix }}core-elasticsearch"
+    image: "{{ neops_elasticsearch_image }}:{{ neops_elasticsearch_image_tag }}"
+    container_default_behavior: no_defaults
+
+    env:
+      bootstrap.memory_lock: "true"
+      ES_JAVA_OPTS: "-Xms2g -Xmx2g"
+      discovery.type: single-node
+      cluster.routing.allocation.disk.threshold_enabled: "false"
+
+    ulimits:
+      - "memlock:-1:-1"
+
+    volumes:
+      - "{{ neops_container_data }}/neops/elasticsearch:/usr/share/elasticsearch/data"
+
+    network_mode: "{{ neops_container_network.core }}"
+    networks:
+      - name: "{{ neops_container_network.core }}"
+        aliases:
+          - elasticsearch
+    purge_networks: yes
+
+    restart_policy: always
+    state: started
+    pull: yes
+    #recreate: yes
+    #restart: yes

@@ -1,0 +1,31 @@
+- name: create pgbouncer container
+  become: yes
+  become_user: "{{ neops_system_user }}"
+  community.docker.docker_container:
+    name: "{{ neops_container_prefix }}core-pgbouncer"
+    image: "{{ neops_pgbouncer_image }}:{{ neops_pgbouncer_image_tag }}"
+    container_default_behavior: no_defaults
+
+    exposed_ports:
+      - "{{ neops_pgbouncer_port }}"
+
+    env:
+      DATABASE_URL: "{{ neops_postgres_backend_url }}"
+      POOL_MODE: "{{ neops_pgbouncer_pool_mode }}"
+      LISTEN_PORT: "{{ neops_pgbouncer_port | string }}"
+      ADMIN_USERS: "{{ neops_postgres_user }}"
+      DEFAULT_POOL_SIZE: "{{ neops_pgbouncer_default_pool_size | string }}"
+      MAX_CLIENT_CONN: "{{ neops_pgbouncer_max_client_conn | string }}"
+
+    network_mode: "{{ neops_container_network.core }}"
+    networks:
+      - name: "{{ neops_container_network.core }}"
+        aliases:
+          - pgbouncer
+    purge_networks: yes
+
+    restart_policy: always
+    state: "{{ neops_pgbouncer_enable | ternary('started', 'absent') }}"
+    pull: yes
+    #recreate: yes
+    #restart: yes

@@ -1,0 +1,29 @@
+- name: create tftp container
+  become: yes
+  become_user: "{{ neops_system_user }}"
+  community.docker.docker_container:
+    name: "{{ neops_container_prefix }}tftp"
+    image: "{{ neops_tftp_image }}:{{ neops_tftp_image_tag }}"
+    container_default_behavior: no_defaults
+
+    ports:
+      - 69:69/udp
+
+    env:
+      DEBUG: "{{ neops_kea_debug|string }}"
+
+    volumes:
+      - "{{ neops_container_data }}/tftp:/tftp"
+
+    network_mode: "{{ neops_container_network.kea }}"
+    networks:
+      - name: "{{ neops_container_network.kea }}"
+        aliases:
+          - kea
+    purge_networks: yes
+
+    restart_policy: always
+    state: "{{ neops_tftp_enabled | ternary('started', 'absent') }}"
+    pull: yes
+#    recreate: yes
+#    restart: yes

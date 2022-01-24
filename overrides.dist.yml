@@ -1,0 +1,74 @@
+#
+# Global settings
+# (see group_vars/all/defaults.yml for all variables)
+#
+neops_hostname:
+  # MANDATORY: Hostname for main interface
+  main: neops.example.org
+  # MANDATORY: Hostname for traefik dashboard / metrics
+  traefik: traefik.neops.example.org
+  # OPTIONAL: Keycloak hostname (mandatory if Keycloak is enabled)
+  keycloak: keycloak.neops.example.org
+  # OPTIONAL: Flower hostname (mandatory if Flower is enabled)
+  flower: flower.neops.example.org
+  # OPTIONAL: Kibana hostname (mandatory if Kibana is enabled)
+  kibana: kibana.neops.example.org
+
+#
+# Ubuntu environment
+#
+# (username is neops unless overridden by neops_system_user)
+neops_system_user_password: SET-ME-PLEASE
+
+#
+# Docker registry
+#
+neops_docker_registry_user: SET-ME-PLEASE
+neops_docker_registry_password: SET-ME-PLEASE
+
+#
+# Traefik reverse proxy
+# (see roles/neops.traefik/defaults/main.yml for all variables)
+#
+# (username is "admin" unless overridden by neops_traefik_dashboard_user)
+neops_traefik_dashboard_password: SET-ME-PLEASE
+
+# To use custom cert instead auto-generated self-signed, place cert and keys in
+# pem-format to roles/neops.traefik/files/certs and set their filename here
+#neops_cert_certfile: traefik.crt.pem
+#neops_cert_keyfile: traefik.key.pem
+
+#
+# Neops
+# (see roles/neops.core/defaults/main.yml for all variables)
+#
+# (username is "admin" unless overridden by neops_superuser_name)
+neops_superuser_email: SET-ME-PLEASE
+neops_superuser_password: SET-ME-PLEASE
+
+neops_postgres_password: SET-ME-PLEASE
+neops_django_secret_key: SET-ME-PLEASE
+
+# Optional services
+#neops_kibana_enable: true
+#neops_flower_enable: true
+
+#
+# Keycloak
+# (see roles/neops.keycloak/defaults/main.yml for all variables)
+#
+#neops_keycloak_enabled: true
+#neops_keycloak_admin_password: SET-ME-PLEASE
+#neops_keycloak_postgres_password: SET-ME-PLEASE
+
+#
+# KEA
+# (see roles/neops.kea/defaults/main.yml for all variables)
+#
+#neops_kea_enabled: true
+
+#
+# TFTP
+# (see roles/neops.tftp/defaults/main.yml for all variables)
+#
+#neops_tftp_enabled: true

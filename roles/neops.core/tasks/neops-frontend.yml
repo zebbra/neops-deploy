@@ -1,0 +1,76 @@
+- name: create neops frontend container
+  become: yes
+  become_user: "{{ neops_system_user }}"
+  community.docker.docker_container:
+    name: "{{ neops_container_prefix }}core-frontend"
+    image: "{{ neops_image }}:{{ neops_image_tag }}"
+    container_default_behavior: no_defaults
+
+    exposed_ports:
+      - 8000
+
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: "{{ neops_container_network.public }}"
+      traefik.http.routers.neops-http-router.entrypoints: http
+      traefik.http.routers.neops-http-router.rule: Host(`{{ neops_hostname.main }}`)
+      traefik.http.services.neops-service.loadbalancer.server.port: "8000"
+      traefik.http.services.neops-service.loadbalancer.server.scheme: http
+      traefik.http.routers.neops-https-router.entrypoints: https
+      traefik.http.routers.neops-https-router.tls: "true"
+      traefik.http.routers.neops-https-router.rule: Host(`{{ neops_hostname.main }}`)
+      traefik.http.middlewares.neops-redirect.redirectscheme.scheme: https
+      traefik.http.routers.neops-http-router.middlewares: neops-redirect
+
+    env:
+      DEBUG: "False"
+      DATABASE_URL: "{{ neops_postgres_url }}"
+      DATABASE_HEALTH_URL: "{{ neops_postgres_backend_url }}"
+      PGBOUNCER_TRANSACTION: "{{ (neops_pgbouncer_pool_mode == 'transaction') | ternary('True','False') | string }}"
+      DJANGO_SECRET_KEY: "{{ neops_django_secret_key }}"
+      DJANGO_ALLOWED_HOSTS: "{{ neops_django_allowed_hosts }}"
+      REDIS_URL: "{{ neops_redis_url }}"
+      # ASGI_THREADS: "${ASGI_THREADS}"
+      NEOPS_PLUGINS: "{{ neops_plugins | join(' ') }}"
+      ELASTICSEARCH_HOSTS: "elasticsearch:9200"
+      ELASTICSEARCH_DSL_INDEX_FIELDS_LIMIT: "{{ neops_elasticsearch_dsl_index_fields_limit|string }}"
+      CORS_ORIGIN_ALLOW_ALL: "{{ neops_cors_origin_allow_all | ternary('True','False')|string }}"
+      SENTRY_DSN: "{{ neops_sentry_dsn }}"
+      SENTRY_ENVIRONMENT: "{{ neops_sentry_environment }}"
+      EMAIL_URL: "{{ neops_email_url }}"
+      IMPORT_DEVICE_DEFAULT_PLATFORM: "{{ neops_import_device_defaults.platform }}"
+      IMPORT_DEVICE_DEFAULT_USERNAME: "{{ neops_import_device_defaults.username }}"
+      IMPORT_DEVICE_DEFAULT_PASSWORD: "{{ neops_import_device_defaults.username }}"
+
+    volumes:
+      - "{{ neops_container_data }}/neops/frontend/tmp:/tmp"
+
+    network_mode: "{{ neops_container_network.core }}"
+    networks:
+      - name: "{{ neops_container_network.core }}"
+        aliases:
+          - frontend
+      - name: "{{ neops_container_network.public }}"
+    purge_networks: yes
+
+    restart_policy: always
+    state: started
+    pull: yes
+#    recreate: yes
+#    restart: yes
+
+- name: create superuser
+  become: yes
+  become_user: "{{ neops_system_user }}"
+  community.docker.docker_container_exec:
+    container: "{{ neops_container_prefix }}core-frontend"
+    argv:
+      - /usr/bin/env
+      - DJANGO_SUPERUSER_USERNAME={{ neops_superuser_name }}
+      - DJANGO_SUPERUSER_EMAIL={{ neops_superuser_email }}
+      - DJANGO_SUPERUSER_PASSWORD={{ neops_superuser_password }}
+      - ./manage.py
+      - createsuperuser
+      - --noinput
+  # this command will fail if user is already there
+  ignore_errors: yes

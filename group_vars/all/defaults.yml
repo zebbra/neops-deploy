@@ -1,0 +1,12 @@
+neops_system_user: neops
+neops_system_group: neops
+
+neops_container_data: /home/neops/.neops
+neops_container_prefix: "neops-"
+neops_container_network:
+  public: "{{ neops_container_prefix }}public"
+  core: "{{ neops_container_prefix }}core"
+  keycloak: "{{ neops_container_prefix }}keycloak"
+  kea: "{{ neops_container_prefix }}kea"
+
+neops_hostname: {}

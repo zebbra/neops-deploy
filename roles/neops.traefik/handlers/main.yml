@@ -1,0 +1,5 @@
+- name: restart traefik
+  community.docker.docker_container:
+    name: "{{ neops_container_prefix }}traefik"
+    container_default_behavior: no_defaults
+    restart: yes

@@ -1,0 +1,25 @@
+---
+- import_tasks: apt.yml
+  tags:
+    - focal
+    - apt
+- import_tasks: upgrade.yml
+  tags:
+    - focal
+    - upgrade
+- import_tasks: packages.yml
+  tags:
+    - focal
+    - packages
+- import_tasks: securing.yml
+  tags:
+    - focal
+    - securing
+- import_tasks: cleanup.yml
+  tags:
+    - focal
+    - cleanup
+- import_tasks: motd.yml
+  tags:
+    - focal
+    - motd

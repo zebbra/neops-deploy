@@ -1,0 +1,9 @@
+- name: login to neops registry
+  become: yes
+  become_user: "{{ neops_system_user }}"
+  community.docker.docker_login:
+    registry_url: quay.io
+    username: "{{ neops_docker_registry_user }}"
+    password: "{{ neops_docker_registry_password }}"
+    reauthorize: yes
+

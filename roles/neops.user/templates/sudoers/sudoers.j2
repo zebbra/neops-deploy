@@ -1,0 +1,6 @@
+# {{ ansible_managed }}
+{% if neops_system_user_allow_pwless_sudo %}
+{{ neops_system_user }} ALL=(ALL) NOPASSWD:ALL
+{% else %}
+{{ neops_system_user }} ALL=(ALL) ALL
+{% endif %}

@@ -1,0 +1,7 @@
+---
+- name: system upgrade
+  apt:
+    upgrade: dist
+    update_cache: yes
+    cache_valid_time: 1800
+  when: neops_ubuntu_focal_upgrade

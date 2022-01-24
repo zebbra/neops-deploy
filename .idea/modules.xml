@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/../neops-core/.idea/neops-core.iml" filepath="$PROJECT_DIR$/../neops-core/.idea/neops-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/neops-deploy.iml" filepath="$PROJECT_DIR$/.idea/neops-deploy.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../neops-docker-compose/.idea/neops-docker-compose.iml" filepath="$PROJECT_DIR$/../neops-docker-compose/.idea/neops-docker-compose.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../neops-docs/.idea/neops-docs.iml" filepath="$PROJECT_DIR$/../neops-docs/.idea/neops-docs.iml" />
+    </modules>
+  </component>
+</project>

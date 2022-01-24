@@ -1,0 +1,43 @@
+- name: create neops beat container
+  become: yes
+  become_user: "{{ neops_system_user }}"
+  community.docker.docker_container:
+    name: "{{ neops_container_prefix }}core-beat"
+    image: "{{ neops_image }}:{{ neops_image_tag }}"
+    container_default_behavior: no_defaults
+
+    command:
+      - /usr/local/bin/celery
+      - -A
+      - neopsapp
+      - beat
+      - --scheduler
+      - neops.enterprise.celery.cron.scheduler:NeopsCeleryScheduler
+      - -l
+      - INFO
+    command_handling: correct
+
+    env:
+      DEBUG: "False"
+      DATABASE_URL: "{{ neops_postgres_url }}"
+      PGBOUNCER_TRANSACTION: "{{ (neops_pgbouncer_pool_mode == 'transaction') | ternary('True','False') | string }}"
+      DJANGO_SECRET_KEY: "{{ neops_django_secret_key }}"
+      DJANGO_ALLOWED_HOSTS: "{{ neops_django_allowed_hosts }}"
+      REDIS_URL: "{{ neops_redis_url }}"
+      # ASGI_THREADS: "${ASGI_THREADS}"
+      NEOPS_PLUGINS: "{{ neops_plugins | join(' ') }}"
+      SENTRY_DSN: "{{ neops_sentry_dsn }}"
+      SENTRY_ENVIRONMENT: "{{ neops_sentry_environment }}"
+
+    network_mode: "{{ neops_container_network.core }}"
+    networks:
+      - name: "{{ neops_container_network.core }}"
+        aliases:
+          - beat
+    purge_networks: yes
+
+    restart_policy: always
+    state: started
+    pull: yes
+#    recreate: yes
+#    restart: yes

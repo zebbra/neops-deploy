@@ -1,0 +1,29 @@
+- name: create etcd container
+  become: yes
+  become_user: "{{ neops_system_user }}"
+  community.docker.docker_container:
+    name: "{{ neops_container_prefix }}core-etcd"
+    image: "{{ neops_etcd_image }}:{{ neops_etcd_image_tag }}"
+    container_default_behavior: no_defaults
+
+    exposed_ports:
+      - 2379
+
+    command:
+      - sh
+      - -c
+      - 'etcd -listen-client-urls http://0.0.0.0:2379 -advertise-client-urls http://etcd-srv:2379'
+    command_handling: correct
+
+    network_mode: "{{ neops_container_network.core }}"
+    networks:
+      - name: "{{ neops_container_network.core }}"
+        aliases:
+          - etcd
+    purge_networks: yes
+
+    restart_policy: always
+    state: started
+    pull: yes
+    #recreate: yes
+    #restart: yes

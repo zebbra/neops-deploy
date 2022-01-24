@@ -1,0 +1,60 @@
+---
+- import_tasks: data.yml
+  tags:
+    - container
+    - data
+
+- import_tasks: redis.yml
+  tags:
+    - container
+    - redis
+
+- import_tasks: postgres.yml
+  tags:
+    - container
+    - postgres
+
+- import_tasks: pgbouncer.yml
+  tags:
+    - container
+    - pgbouncer
+
+- import_tasks: etcd.yml
+  tags:
+    - container
+    - etcd
+
+- import_tasks: elasticsearch.yml
+  tags:
+    - container
+    - elasticsearch
+
+- import_tasks: neops-init.yml
+  tags:
+    - container
+    - neops-init
+
+- import_tasks: neops-frontend.yml
+  tags:
+    - container
+    - neops-frontend
+
+- import_tasks: neops-worker.yml
+  tags:
+    - container
+    - neops-worker
+
+- import_tasks: neops-beat.yml
+  tags:
+    - container
+    - neops-beat
+
+- import_tasks: flower.yml
+  tags:
+    - container
+    - flower
+
+- import_tasks: kibana.yml
+  tags:
+    - container
+    - kibana

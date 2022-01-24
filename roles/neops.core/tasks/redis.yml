@@ -1,0 +1,20 @@
+- name: create redis container
+  become: yes
+  become_user: "{{ neops_system_user }}"
+  community.docker.docker_container:
+    name: "{{ neops_container_prefix }}core-redis"
+    image: "{{ neops_redis_image }}:{{ neops_redis_image_tag }}"
+    container_default_behavior: no_defaults
+
+    network_mode: "{{ neops_container_network.core }}"
+    networks:
+      - name: "{{ neops_container_network.core }}"
+        aliases:
+          - redis
+    purge_networks: yes
+
+    restart_policy: always
+    state: started
+    pull: yes
+    #recreate: yes
+    #restart: yes

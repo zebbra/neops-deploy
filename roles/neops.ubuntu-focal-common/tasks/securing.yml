@@ -1,0 +1,8 @@
+---
+- name: make sane defaults
+  lineinfile:
+    dest: /etc/adduser.conf
+    line: "DIR_MODE=0700"
+    regexp: "^DIR_MODE="
+    state: present
+  when: neops_ubuntu_focal_secure_home

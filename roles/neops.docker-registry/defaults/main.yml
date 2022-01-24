@@ -1,0 +1,2 @@
+neops_docker_registry_user: "{{ undef(hint='Please specify neops docker registry user') }}"
+neops_docker_registry_password: "{{ undef(hint='Please specify neops docker registry password') }}"

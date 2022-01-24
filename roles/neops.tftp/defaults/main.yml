@@ -1,0 +1,3 @@
+neops_tftp_enabled: false
+neops_tftp_image: quay.io/zebbra/neops-atftpd
+neops_tftp_image_tag: latest

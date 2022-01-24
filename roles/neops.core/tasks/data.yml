@@ -1,0 +1,7 @@
+- name: create data directory
+  file:
+    path: "{{ neops_container_data }}/neops"
+    state: directory
+    owner: "{{ neops_system_user }}"
+    group: "{{ neops_system_group }}"
+    mode: 0700

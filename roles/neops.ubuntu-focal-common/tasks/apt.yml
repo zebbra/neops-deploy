@@ -1,0 +1,22 @@
+---
+- name: manage automatic install
+  block:
+    - name: disable automatic actions
+      template:
+        src: apt/10periodic.j2
+        dest: /etc/apt/apt.conf.d/10periodic
+        owner: root
+        group: root
+        mode: 0644
+    - name: disable service startup
+      systemd:
+        name: "{{ item }}"
+        state: stopped
+        enabled: false
+        masked: true
+      with_items:
+        - apt-daily.service
+        - apt-daily.timer
+        - apt-daily-upgrade.service
+        - apt-daily-upgrade.timer
+  when: neops_ubuntu_focal_manage_apt

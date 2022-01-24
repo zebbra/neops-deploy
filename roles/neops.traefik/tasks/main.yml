@@ -1,0 +1,10 @@
+---
+- import_tasks: cert.yml
+  tags:
+    - cert
+    - traefik
+
+- import_tasks: traefik.yml
+  tags:
+    - container
+    - traefik

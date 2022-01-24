@@ -1,0 +1,3 @@
+neops_system_user_manage: true
+neops_system_user_allow_pwless_sudo: true
+neops_system_user_password: "{{ undef(hint='Please specify system password for neops user') }}"

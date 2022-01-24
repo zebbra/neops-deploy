@@ -1,0 +1,20 @@
+- name: cleanup motd
+  block:
+    - name: remove motd config
+      file:
+        path: /etc/update-motd.d
+        state: absent
+    - name: remove current motd
+      file:
+        path: /run/motd.dynamic
+        state: absent
+    - name: disable service startup
+      systemd:
+        name: "{{ item }}"
+        state: stopped
+        enabled: false
+        masked: true
+      loop:
+        - motd-news.service
+        - motd-news.timer
+  when: neops_ubuntu_focal_manage_motd

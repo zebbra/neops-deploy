@@ -1,0 +1,67 @@
+neops_ubuntu_focal_cleanup_packages:
+  - apt-xapian-index
+  - byobu
+  - lxcfs
+  - lxd
+  - lxd-client
+  - mlocate
+  - open-iscsi
+  - packagekit
+  - snapd
+  - ubuntu-standard
+  - ufw
+  - unattended-upgrades
+  - update-manager-core
+
+neops_ubuntu_focal_disable_services:
+  - accounts-daemon
+  - polkitd
+  - fwupd
+  - fwupd-refresh
+  - fwupd-refresh.timer
+
+neops_ubuntu_focal_default_packages:
+  - acl
+  - acpid
+  - apt-transport-https
+  - curl
+  - dbus
+  - fd-find
+  - git
+  - httpie
+  - iotop
+  - iptraf
+  - iputils-arping
+  - jq
+  - ldnsutils
+  - libpam-systemd
+  - lsof
+  - man-db
+  - manpages
+  - moreutils
+  - mtr-tiny
+  - net-tools
+  - psmisc
+  - rename
+  - ripgrep
+  - rsync
+  - strace
+  - sysfsutils
+  - sysstat
+  - tcpdump
+  - telnet
+  - traceroute
+  - tree
+  - vim
+  - zip
+neops_ubuntu_focal_additional_packages: []
+
+neops_ubuntu_focal_manage_apt: true
+
+neops_ubuntu_focal_manage_motd: true
+
+neops_ubuntu_focal_secure_home: true
+
+neops_ubuntu_focal_upgrade: true
+
+

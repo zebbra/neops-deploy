@@ -1,0 +1,10 @@
+---
+- import_tasks: network.yml
+  tags:
+    - docker
+    - network
+
+- import_tasks: data.yml
+  tags:
+    - docker
+    - data

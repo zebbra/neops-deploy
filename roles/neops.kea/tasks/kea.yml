@@ -1,0 +1,39 @@
+- name: create kea container
+  become: yes
+  become_user: "{{ neops_system_user }}"
+  community.docker.docker_container:
+    name: "{{ neops_container_prefix }}kea"
+    image: "{{ neops_kea_image }}:{{ neops_kea_image_tag }}"
+    container_default_behavior: no_defaults
+
+    ports:
+      - 67:67/udp
+
+    env:
+      KEA_DEBUG: "{{ neops_kea_debug|string }}"
+      KEA_TFTP_IP: "{{ neops_kea_tftp_ip }}"
+      KEA_DNS_IP: "{{ neops_kea_dns_ip }}"
+      KEA_HOOK_NEOPS_API_URL: "{{ neops_kea_api_url }}"
+      KEA_HOOK_NEOPS_API_KEY: "{{ neops_kea_api_key }}"
+      KEA_HOOK_NEOPS_UNIQUE_TASK: "{{ neops_kea_unique_task }}"
+      KEA_HOOK_DEVICES_DEFAULT_USERNAME: "{{ neops_kea_devices_default_username }}"
+      KEA_HOOK_DEVICE_DEFAULT_PW: "{{ neops_kea_devices_default_pw }}"
+      KEA_HOOK_DEBUG: "{{ neops_kea_hook_debug|string }}"
+      KEA_HOOK_ADDITIONAL_INFORMATION: "{{ neops_kea_additional_information|string }}"
+      KEA_HOOK_HOSTNAME_STARTSWITH: "{{ neops_kea_hostname_startswith }}"
+
+    volumes:
+      - "{{ neops_container_data }}/kea:/etc/kea"
+
+    network_mode: "{{ neops_container_network.kea }}"
+    networks:
+      - name: "{{ neops_container_network.kea }}"
+        aliases:
+          - kea
+    purge_networks: yes
+
+    restart_policy: always
+    state: "{{ neops_kea_enabled | ternary('started', 'absent') }}"
+    pull: yes
+#    recreate: yes
+#    restart: yes

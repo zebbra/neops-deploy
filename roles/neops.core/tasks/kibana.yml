@@ -1,0 +1,34 @@
+- name: create kibana container
+  become: yes
+  become_user: "{{ neops_system_user }}"
+  community.docker.docker_container:
+    name: "{{ neops_container_prefix }}core-kibana"
+    image: "{{ neops_kibana_image }}:{{ neops_kibana_image_tag }}"
+    container_default_behavior: no_defaults
+
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: traefik
+      traefik.http.routers.kibana-http-router.entrypoints: http
+      traefik.http.routers.kibana-http-router.rule: Host(`{{ neops_hostname.kibana }}`)
+      traefik.http.services.kibana-service.loadbalancer.server.port: "5601"
+      traefik.http.services.kibana-service.loadbalancer.server.scheme: http
+      traefik.http.routers.kibana-https-router.entrypoints: https
+      traefik.http.routers.kibana-https-router.tls: "true"
+      traefik.http.routers.kibana-https-router.rule: Host(`{{ neops_hostname.kibana }}`)
+      traefik.http.middlewares.kibana-redirect.redirectscheme.scheme: https
+      traefik.http.routers.kibana-http-router.middlewares: kibana-redirect
+
+    network_mode: "{{ neops_container_network.core }}"
+    networks:
+      - name: "{{ neops_container_network.core }}"
+        aliases:
+          - kibana
+      - name: "{{ neops_container_network.public }}"
+    purge_networks: yes
+
+    restart_policy: always
+    state: "{{ neops_kibana_enable | ternary('started', 'absent') }}"
+    pull: yes
+    #recreate: yes
+    #restart: yes

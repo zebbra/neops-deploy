@@ -1,0 +1,40 @@
+- name: create neops system user
+  block:
+    - name: create neops group
+      group:
+        name: "{{ neops_system_group }}"
+        state: present
+        system: yes
+    - name: create neops user
+      user:
+        name: "{{ neops_system_user }}"
+        shell: /bin/bash
+        home: "/home/{{ neops_system_user }}"
+        group: "{{ neops_system_group }}"
+        groups: docker
+        state: present
+    - name: secure neops directory
+      file:
+        path: "/home/{{ neops_system_user }}"
+        owner: "{{ neops_system_user }}"
+        group: "{{ neops_system_group }}"
+        mode: 0750
+    - name: create ssh config dir
+      file:
+        path: "/home/{{ neops_system_user }}/.ssh"
+        state: directory
+        mode: 0700
+        owner: "{{ neops_system_user }}"
+        group: "{{ neops_system_group }}"
+    - name: set neops sudo policy
+      template:
+        src: sudoers/sudoers.j2
+        dest: "/etc/sudoers.d/{{ neops_system_user }}"
+        owner: root
+        group: root
+        mode: 0440
+    - name: set neops password
+      user:
+        name: "{{ neops_system_user }}"
+        password: "{{ neops_system_user_password | password_hash('sha512', 65534 | random(seed=inventory_hostname) | string) }}"
+  when: neops_system_user_manage

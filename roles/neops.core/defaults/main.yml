@@ -1,0 +1,93 @@
+#
+# Neops Core
+#
+neops_image: quay.io/zebbra/neops-core
+neops_image_tag: latest
+neops_plugins:
+  - neops_auth_static_api_key
+  - neops_auth_django # neops_auth_keycloak
+  - neops_cron
+
+neops_django_secret_key: "{{ undef(hint='Please specify neops django secret') }}"
+neops_django_allowed_hosts: "*"
+neops_cors_origin_allow_all: true
+
+neops_sentry_environment: ""
+neops_sentry_dsn: ""
+
+neops_email_url: "smtp+tls://"
+
+neops_import_device_defaults:
+  platform: ""
+  username: ""
+  password: ""
+
+neops_nornir_close_connection: true
+neops_nornir_connection_delay_factor: 2
+neops_nornir_threads: 50
+
+neops_superuser_name: admin
+neops_superuser_email: "{{ undef(hint='Please specify neops superuser email') }}"
+neops_superuser_password: "{{ undef(hint='Please specify neops superuser password') }}"
+
+#
+# PostgreSQL
+#
+neops_postgres_image: postgres
+neops_postgres_image_tag: 11-alpine
+neops_postgres_user: neops
+neops_postgres_db: neops
+neops_postgres_password: "{{ undef(hint='Please specify postgres password for neops database') }}"
+
+neops_pgbouncer_enable: true
+neops_pgbouncer_image: edoburu/pgbouncer
+neops_pgbouncer_image_tag: latest
+neops_pgbouncer_pool_mode: "session" # transaction
+neops_pgbouncer_default_pool_size: 50
+neops_pgbouncer_max_client_conn: 1000
+neops_pgbouncer_port: 6432
+
+# composite variables
+neops_postgres_pgbouncer_url: "postgres://{{ neops_postgres_user }}:{{ neops_postgres_password }}@pgbouncer:{{ neops_pgbouncer_port }}/{{ neops_postgres_db }}"
+neops_postgres_backend_url: "postgres://{{ neops_postgres_user }}:{{ neops_postgres_password }}@postgres:5432/{{ neops_postgres_db }}"
+neops_postgres_url: "{{ neops_pgbouncer_enable | ternary(neops_postgres_pgbouncer_url,neops_postgres_backend_url) }}"
+
+#
+# Redis
+#
+neops_redis_image: redis
+neops_redis_image_tag: 5
+neops_redis_url: "redis://redis:6379"
+neops_redis_database: 0
+
+#
+# Elasticsearch
+#
+neops_elasticsearch_image: docker.elastic.co/elasticsearch/elasticsearch
+neops_elasticsearch_image_tag: 7.9.0
+neops_elasticsearch_dsl_index_shards: 1
+neops_elasticsearch_dsl_index_replicas: 0
+neops_elasticsearch_dsl_index_fields_limit: 100000
+neops_elasticsearch_dsl_signal_processor: neops.core.documents.neops_signal_processor.NeopsCacheSignalProcessor
+# neops_elasticsearch_dsl_autosync: "True" (ELASTICSEARCH_DSL_AUTOSYNC was never used in legacy docker-compose)
+
+#
+# Kibana
+#
+neops_kibana_enable: true
+neops_kibana_image: docker.elastic.co/kibana/kibana
+neops_kibana_image_tag: 7.9.0
+
+#
+# etcd
+#
+neops_etcd_image: quay.io/coreos/etcd
+neops_etcd_image_tag: latest
+
+#
+# Flower
+#
+neops_flower_enable: true
+neops_flower_image: mher/flower
+neops_flower_image_tag: latest
+

@@ -1,0 +1,62 @@
+- name: create cert dir
+  file:
+    path: "{{ neops_container_data }}/traefik/certs"
+    owner: "{{ neops_system_user }}"
+    group: "{{ neops_system_group }}"
+    mode: 0500
+    state: directory
+
+- name: copy custom cert
+  block:
+    - name: copy cert
+      copy:
+        src: "certs/{{ neops_cert_certfile }}"
+        dest: "{{ neops_container_data }}/traefik/certs/traefik.crt.pem"
+        owner: "{{ neops_system_user }}"
+        group: "{{ neops_system_group }}"
+        mode: 0400
+      notify:
+        - restart traefik
+    - name: copy private key
+      copy:
+        src: "certs/{{ neops_cert_keyfile }}"
+        dest: "{{ neops_container_data }}/traefik/certs/traefik.key.pem"
+        owner: "{{ neops_system_user }}"
+        group: "{{ neops_system_group }}"
+        mode: 0400
+      notify:
+        - restart traefik
+  when: neops_cert_certfile != "" and  neops_cert_keyfile != ""
+- name: generate self-signed cert
+  block:
+    - name: generate private key
+      community.crypto.openssl_privatekey:
+        path: "{{ neops_container_data }}/traefik/certs/traefik.key.pem"
+        size: 4096
+        type: RSA
+        owner: "{{ neops_system_user }}"
+        group: "{{ neops_system_group }}"
+        mode: 0400
+      notify:
+        - restart traefik
+    - name: generate csr
+      community.crypto.openssl_csr:
+        path: "{{ neops_container_data }}/traefik/certs/traefik.csr"
+        privatekey_path: "{{ neops_container_data }}/traefik/certs/traefik.key.pem"
+        subject_alt_name: "{{ neops_cert_san | map('regex_replace', '^', 'DNS:') | list }}"
+        owner: "{{ neops_system_user }}"
+        group: "{{ neops_system_group }}"
+        mode: 0400
+    - name: generate certificate
+      community.crypto.x509_certificate:
+        path: "{{ neops_container_data }}/traefik/certs/traefik.crt.pem"
+        csr_path: "{{ neops_container_data }}/traefik/certs/traefik.csr"
+        privatekey_path: "{{ neops_container_data }}/traefik/certs/traefik.key.pem"
+        provider: selfsigned
+        selfsigned_not_after: "+364d"
+        owner: "{{ neops_system_user }}"
+        group: "{{ neops_system_group }}"
+        mode: 0400
+      notify:
+        - restart traefik
+  when: neops_cert_keyfile == ""

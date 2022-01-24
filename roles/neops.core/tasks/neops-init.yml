@@ -1,0 +1,42 @@
+- name: create neops init container
+  become: yes
+  become_user: "{{ neops_system_user }}"
+  community.docker.docker_container:
+    name: "{{ neops_container_prefix }}core-init"
+    image: "{{ neops_image }}:{{ neops_image_tag }}"
+    container_default_behavior: no_defaults
+
+    entrypoint:
+      - /app/init.sh
+
+    env:
+      DEBUG: "False"
+      DATABASE_URL: "{{ neops_postgres_url }}"
+      DJANGO_SECRET_KEY: "{{ neops_django_secret_key }}"
+      DJANGO_ALLOWED_HOSTS: "{{ neops_django_allowed_hosts }}"
+      REDIS_URL: "{{ neops_redis_url }}"
+      # ASGI_THREADS: "${ASGI_THREADS}"
+      NEOPS_PLUGINS: "{{ neops_plugins | join(' ') }}"
+      ELASTICSEARCH_HOSTS: "elasticsearch:9200"
+      ELASTICSEARCH_DSL_INDEX_FIELDS_LIMIT: "{{ neops_elasticsearch_dsl_index_fields_limit|string }}"
+      CORS_ORIGIN_ALLOW_ALL: "{{ neops_cors_origin_allow_all | ternary('True','False')|string }}"
+      SENTRY_DSN: "{{ neops_sentry_dsn }}"
+      SENTRY_ENVIRONMENT: "{{ neops_sentry_environment }}"
+      EMAIL_URL: "{{ neops_email_url }}"
+      IMPORT_DEVICE_DEFAULT_PLATFORM: "{{ neops_import_device_defaults.platform }}"
+      IMPORT_DEVICE_DEFAULT_USERNAME: "{{ neops_import_device_defaults.username }}"
+      IMPORT_DEVICE_DEFAULT_PASSWORD: "{{ neops_import_device_defaults.username }}"
+
+    network_mode: "{{ neops_container_network.core }}"
+    networks:
+      - name: "{{ neops_container_network.core }}"
+        aliases:
+          - init
+    purge_networks: yes
+
+    restart_policy: no
+    state: started
+    pull: yes
+#    recreate: yes
+#    restart: yes
+

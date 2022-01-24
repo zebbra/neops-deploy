@@ -1,0 +1,89 @@
+- name: create keycloak data dirs
+  file:
+    path: "{{ neops_container_data }}/keycloak/{{ item }}"
+    state: directory
+#    owner: "{{ neops_system_user }}"
+#    group: "{{ neops_system_group }}"
+#    mode: 0700
+  loop:
+    - config
+    - export
+
+- name: copy config files
+  copy:
+    src: "{{ item }}"
+    dest: "{{ neops_container_data }}/keycloak/config/{{ item }}"
+#    owner: "{{ neops_system_user }}"
+#    group: "{{ neops_system_group }}"
+#    mode: 0700
+  loop:
+    - customca.jks
+    - truststore.cli
+
+- name: copy realm export file
+  copy:
+    src: "neops-realm-export.json"
+    dest: "{{ neops_container_data }}/keycloak/export/neops-realm-export.json"
+    owner: "{{ neops_system_user }}"
+    group: "{{ neops_system_group }}"
+    mode: 0644
+
+- name: create keycloak container
+  become: yes
+  become_user: "{{ neops_system_user }}"
+  community.docker.docker_container:
+    name: "{{ neops_container_prefix }}keycloak"
+    image: "{{ neops_keycloak_image }}:{{ neops_keycloak_image_tag }}"
+    container_default_behavior: no_defaults
+
+    exposed_ports:
+      - 8080
+
+    command:
+      - -Dkeycloak.profile.feature.upload_scripts=enabled
+
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: "{{ neops_container_network.public }}"
+      traefik.http.routers.keycloak-http-router.entrypoints: http
+      traefik.http.routers.keycloak-http-router.rule: Host(`{{ neops_hostname.keycloak }}`)
+      traefik.http.services.keycloak-service.loadbalancer.server.port: "8080"
+      traefik.http.services.keycloak-service.loadbalancer.server.scheme: http
+      traefik.http.routers.keycloak-https-router.entrypoints: https
+      traefik.http.routers.keycloak-https-router.tls: "true"
+      traefik.http.routers.keycloak-https-router.rule: Host(`{{ neops_hostname.keycloak }}`)
+      traefik.http.middlewares.keycloak-redirect.redirectscheme.scheme: https
+      traefik.http.routers.keycloak-http-router.middlewares: keycloak-redirect
+
+    env:
+      no_proxy: "*"
+      NO_PROXY: "*"
+      VIRTUAL_HOST: "{{ neops_hostname.keycloak }}"
+      VIRTUAL_PORT: "8080"
+      KEYCLOAK_USER: "{{ neops_keycloak_admin_user }}"
+      KEYCLOAK_PASSWORD: "{{ neops_keycloak_admin_password }}"
+      DB_VENDOR: "POSTGRES"
+      DB_ADDR: "postgres"
+      DB_DATABASE: "{{ neops_keycloak_postgres_db }}"
+      DB_USER: "{{ neops_keycloak_postgres_user }}"
+      DB_PASSWORD: "{{ neops_keycloak_postgres_password }}"
+      PROXY_ADDRESS_FORWARDING: "True"
+
+    volumes:
+      - "{{ neops_container_data }}/keycloak/config/customcerts:/opt/jboss/keycloak/standalone/configuration/customcerts"
+      - "{{ neops_container_data }}/keycloak/config/customca.jks:/opt/jboss/keycloak/standalone/configuration/keystores/customca.jks"
+      - "{{ neops_container_data }}/keycloak/config/truststore.cli:/opt/jboss/startup-scripts/truststore.cli"
+
+    network_mode: "{{ neops_container_network.keycloak }}"
+    networks:
+      - name: "{{ neops_container_network.keycloak }}"
+        aliases:
+          - keycloak
+      - name: "{{ neops_container_network.public }}"
+    purge_networks: yes
+
+    restart_policy: always
+    state: "{{ neops_keycloak_enabled | ternary('started', 'absent') }}"
+    pull: yes
+#    recreate: yes
+#    restart: yes

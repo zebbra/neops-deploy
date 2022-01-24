@@ -1,0 +1,13 @@
+- name: install docker
+  apt:
+    pkg:
+      - docker.io
+      - python3-docker
+    update_cache: yes
+    state: latest
+    cache_valid_time: 3600
+- name: start and enable service
+  systemd:
+    service: docker
+    enabled: yes
+    state: started

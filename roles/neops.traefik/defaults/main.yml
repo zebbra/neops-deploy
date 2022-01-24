@@ -1,0 +1,12 @@
+# custom cert
+neops_cert_certfile: ""
+neops_cert_keyfile: ""
+
+# self-signed cert options
+neops_cert_additional_hosts: []
+neops_cert_san: "{{ neops_hostname | dict2items | map(attribute='value') | select() | list  + neops_cert_additional_hosts }}"
+
+neops_traefik_image: traefik
+neops_traefik_image_tag: 2.5
+neops_traefik_dashboard_user: admin
+neops_traefik_dashboard_password: "{{ undef(hint='Please specify traefik dashboard password') }}"

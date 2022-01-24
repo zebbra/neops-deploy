@@ -1,0 +1,10 @@
+---
+- import_tasks: data.yml
+  tags:
+    - container
+    - data
+
+- import_tasks: tftp.yml
+  tags:
+    - container
+    - tftp

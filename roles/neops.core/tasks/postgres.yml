@@ -1,0 +1,36 @@
+- name: create postgres data dir
+  file:
+    path: "{{ neops_container_data }}/neops/postgres"
+#    owner: "{{ neops_system_user }}"
+#    group: "{{ neops_system_group }}"
+#    mode: 0700
+    state: directory
+
+- name: create postgres container
+  become: yes
+  become_user: "{{ neops_system_user }}"
+  community.docker.docker_container:
+    name: "{{ neops_container_prefix }}core-postgres"
+    image: "{{ neops_postgres_image }}:{{ neops_postgres_image_tag }}"
+    container_default_behavior: no_defaults
+
+    env:
+      POSTGRES_USER: "{{ neops_postgres_user }}"
+      POSTGRES_DB: "{{ neops_postgres_db }}"
+      POSTGRES_PASSWORD: "{{ neops_postgres_password }}"
+
+    volumes:
+      - "{{ neops_container_data }}/neops/postgres:/var/lib/postgresql/data"
+
+    network_mode: "{{ neops_container_network.core }}"
+    networks:
+      - name: "{{ neops_container_network.core }}"
+        aliases:
+          - postgres
+    purge_networks: yes
+
+    restart_policy: always
+    state: started
+    pull: yes
+    #recreate: yes
+    #restart: yes

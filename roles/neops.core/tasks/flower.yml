@@ -1,0 +1,40 @@
+- name: create flower container
+  become: yes
+  become_user: "{{ neops_system_user }}"
+  community.docker.docker_container:
+    name: "{{ neops_container_prefix }}core-flower"
+    image: "{{ neops_flower_image }}:{{ neops_flower_image_tag }}"
+    container_default_behavior: no_defaults
+
+    entrypoint:
+      - celery
+      - flower
+      - --broker={{ neops_redis_url }}/{{ neops_redis_database }}
+      - --port=5555
+
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: traefik
+      traefik.http.routers.flower-http-router.entrypoints: http
+      traefik.http.routers.flower-http-router.rule: Host(`{{ neops_hostname.flower }}`)
+      traefik.http.services.flower-service.loadbalancer.server.port: "5555"
+      traefik.http.services.flower-service.loadbalancer.server.scheme: http
+      traefik.http.routers.flower-https-router.entrypoints: https
+      traefik.http.routers.flower-https-router.tls: "true"
+      traefik.http.routers.flower-https-router.rule: Host(`{{ neops_hostname.flower }}`)
+      traefik.http.middlewares.flower-redirect.redirectscheme.scheme: https
+      traefik.http.routers.flower-http-router.middlewares: flower-redirect
+
+    network_mode: "{{ neops_container_network.core }}"
+    networks:
+      - name: "{{ neops_container_network.core }}"
+        aliases:
+          - flower
+      - name: "{{ neops_container_network.public }}"
+    purge_networks: yes
+
+    restart_policy: always
+    state: "{{ neops_flower_enable | ternary('started', 'absent') }}"
+    pull: yes
+    #recreate: yes
+    #restart: yes

@@ -1,0 +1,33 @@
+- name: create postgres data dir
+  file:
+    path: "{{ neops_container_data }}/keycloak/postgres"
+    state: directory
+
+- name: create postgres container
+  become: yes
+  become_user: "{{ neops_system_user }}"
+  community.docker.docker_container:
+    name: "{{ neops_container_prefix }}keycloak-postgres"
+    image: "{{ neops_keycloak_postgres_image }}:{{ neops_keycloak_postgres_image_tag }}"
+    container_default_behavior: no_defaults
+
+    env:
+      POSTGRES_USER: "{{ neops_keycloak_postgres_user }}"
+      POSTGRES_DB: "{{ neops_keycloak_postgres_db }}"
+      POSTGRES_PASSWORD: "{{ neops_keycloak_postgres_password }}"
+
+    volumes:
+      - "{{ neops_container_data }}/keycloak/postgres:/var/lib/postgresql/data"
+
+    network_mode: "{{ neops_container_network.keycloak }}"
+    networks:
+      - name: "{{ neops_container_network.keycloak }}"
+        aliases:
+          - postgres
+    purge_networks: yes
+
+    restart_policy: "on-failure"
+    state: "{{ neops_keycloak_enabled | ternary('started', 'absent') }}"
+    pull: yes
+    #recreate: yes
+    #restart: yes
