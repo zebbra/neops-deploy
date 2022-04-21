@@ -12,3 +12,4 @@ neops_kea_devices_default_pw: staging
 neops_kea_hook_debug: false
 neops_kea_additional_information: false
 neops_kea_hostname_startswith: "neops-init"
+neops_key_hook_ssl_noverify: false

@@ -21,6 +21,7 @@
       KEA_HOOK_DEBUG: "{{ neops_kea_hook_debug|string }}"
       KEA_HOOK_ADDITIONAL_INFORMATION: "{{ neops_kea_additional_information|string }}"
       KEA_HOOK_HOSTNAME_STARTSWITH: "{{ neops_kea_hostname_startswith }}"
+      KEA_HOOK_SSL_NO_VERIFY: "{{ neops_key_hook_ssl_noverify|string }}"
 
     volumes:
       - "{{ neops_container_data }}/kea:/etc/kea"
