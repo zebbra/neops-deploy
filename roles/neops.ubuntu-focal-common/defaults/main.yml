@@ -63,5 +63,3 @@ neops_ubuntu_focal_manage_motd: true
 neops_ubuntu_focal_secure_home: true
 
 neops_ubuntu_focal_upgrade: true
-
-

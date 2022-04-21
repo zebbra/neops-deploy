@@ -6,4 +6,3 @@
     username: "{{ neops_docker_registry_user }}"
     password: "{{ neops_docker_registry_password }}"
     reauthorize: yes
-

@@ -90,4 +90,3 @@ neops_etcd_image_tag: latest
 neops_flower_enable: true
 neops_flower_image: mher/flower
 neops_flower_image_tag: latest
-
