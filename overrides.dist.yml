@@ -49,6 +49,10 @@ neops_superuser_password: SET-ME-PLEASE
 neops_postgres_password: SET-ME-PLEASE
 neops_django_secret_key: SET-ME-PLEASE
 
+# Scaling
+#neops_scale_frontend: 1
+#neops_scale_worker: 1
+
 # Optional services
 #neops_kibana_enable: true
 #neops_flower_enable: true

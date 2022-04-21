@@ -8,6 +8,9 @@ neops_plugins:
   - neops_auth_django # neops_auth_keycloak
   - neops_cron
 
+neops_scale_frontend: 1
+neops_scale_worker: 1
+
 neops_django_secret_key: "{{ undef(hint='Please specify neops django secret') }}"
 neops_django_allowed_hosts: "*"
 neops_cors_origin_allow_all: true

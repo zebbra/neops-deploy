@@ -1,10 +1,13 @@
-- name: create neops worker container
+- name: create neops worker containers
   become: yes
   become_user: "{{ neops_system_user }}"
   community.docker.docker_container:
-    name: "{{ neops_container_prefix }}core-worker"
+    name: "{{ neops_container_prefix }}core-worker_{{ item }}"
     image: "{{ neops_image }}:{{ neops_image_tag }}"
     container_default_behavior: no_defaults
+
+    labels:
+      component: "worker"
 
     command:
       - /usr/local/bin/celery
@@ -57,3 +60,16 @@
     pull: yes
 #    recreate: yes
 #    restart: yes
+  loop: "{{ range(neops_scale_worker) }}"
+
+- name: determine current scaling
+  shell: "docker ps -q -a -f 'label=component=worker'"
+  register: neops_scale_worker_current
+
+- name: remove excess containters
+  become: yes
+  become_user: "{{ neops_system_user }}"
+  community.docker.docker_container:
+    name: "{{ neops_container_prefix }}core-frontend_{{ item }}"
+    state: absent
+  loop: "{{ range(neops_scale_worker,neops_scale_worker_current.stdout_lines|length) }}"

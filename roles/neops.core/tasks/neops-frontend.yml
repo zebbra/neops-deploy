@@ -1,8 +1,8 @@
-- name: create neops frontend container
+- name: create neops frontend containers
   become: yes
   become_user: "{{ neops_system_user }}"
   community.docker.docker_container:
-    name: "{{ neops_container_prefix }}core-frontend"
+    name: "{{ neops_container_prefix }}core-frontend_{{ item }}"
     image: "{{ neops_image }}:{{ neops_image_tag }}"
     container_default_behavior: no_defaults
 
@@ -10,6 +10,7 @@
       - 8000
 
     labels:
+      component: "frontend"
       traefik.enable: "true"
       traefik.docker.network: "{{ neops_container_network.public }}"
       traefik.http.routers.neops-http-router.entrypoints: http
@@ -58,12 +59,25 @@
     pull: yes
 #    recreate: yes
 #    restart: yes
+  loop: "{{ range(neops_scale_frontend) }}"
+
+- name: determine current scaling
+  shell: "docker ps -q -a -f 'label=component=frontend'"
+  register: neops_scale_frontend_current
+
+- name: remove excess containters
+  become: yes
+  become_user: "{{ neops_system_user }}"
+  community.docker.docker_container:
+    name: "{{ neops_container_prefix }}core-frontend_{{ item }}"
+    state: absent
+  loop: "{{ range(neops_scale_frontend,neops_scale_frontend_current.stdout_lines|length) }}"
 
 - name: create superuser
   become: yes
   become_user: "{{ neops_system_user }}"
   community.docker.docker_container_exec:
-    container: "{{ neops_container_prefix }}core-frontend"
+    container: "{{ neops_container_prefix }}core-frontend_0"
     argv:
       - /usr/bin/env
       - DJANGO_SUPERUSER_USERNAME={{ neops_superuser_name }}
