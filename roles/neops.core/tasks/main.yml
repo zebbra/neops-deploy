@@ -32,21 +32,25 @@
 - import_tasks: neops-init.yml
   tags:
     - container
+    - neops
     - neops-init
 
 - import_tasks: neops-frontend.yml
   tags:
     - container
+    - neops
     - neops-frontend
 
 - import_tasks: neops-worker.yml
   tags:
     - container
+    - neops
     - neops-worker
 
 - import_tasks: neops-beat.yml
   tags:
     - container
+    - neops
     - neops-beat
 
 - import_tasks: flower.yml
