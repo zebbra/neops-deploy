@@ -70,6 +70,6 @@
   become: yes
   become_user: "{{ neops_system_user }}"
   community.docker.docker_container:
-    name: "{{ neops_container_prefix }}core-frontend_{{ item }}"
+    name: "{{ neops_container_prefix }}core-worker_{{ item }}"
     state: absent
   loop: "{{ range(neops_scale_worker,neops_scale_worker_current.stdout_lines|length) }}"
