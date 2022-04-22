@@ -263,6 +263,6 @@ Located in `/opt/neops` by default (see `neops_container_data` variable):
 
 The  system user (`neops` by default) has permissions to manage docker containers and use sudo and can be used to perform maintenance tasks.
 
-Docker containers can be stopped or restarted as usual, but all local changes managed by will be overwritten in the next deployment run, including
+Docker containers can be stopped or restarted as usual, but all local changes managed by ansible will be overwritten in the next deployment run, including
 * state of the containers (stopped ones will be started again)
 * managed configuration files and container configs/environment
