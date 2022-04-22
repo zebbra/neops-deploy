@@ -42,6 +42,9 @@ neops_traefik_dashboard_password: SET-ME-PLEASE
 # Neops
 # (see roles/neops.core/defaults/main.yml for all variables)
 #
+# Version
+#neops_image_tag: latest
+
 # (username is "admin" unless overridden by neops_superuser_name)
 neops_superuser_email: SET-ME-PLEASE
 neops_superuser_password: SET-ME-PLEASE
