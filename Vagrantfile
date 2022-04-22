@@ -9,6 +9,7 @@ Vagrant.configure("2") do |config|
   # The most common configuration options are documented and commented below.
   # For a complete reference, please see the online documentation at
   # https://docs.vagrantup.com.
+  config.vm.define "neops"
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
@@ -50,6 +51,8 @@ Vagrant.configure("2") do |config|
   # Example for VirtualBox:
   #
   config.vm.provider "virtualbox" do |vb|
+    vb.name = "neops"
+
     # Display the VirtualBox GUI when booting the machine
     vb.gui = false
 
@@ -63,6 +66,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision "ansible" do |ansible|
     ansible.playbook = "neops.yml"
     ansible.galaxy_role_file = "requirements.yml"
-#     ansible.verbose = true
+#    ansible.verbose = true
+#    ansible.raw_arguments = "-vvv"
   end
 end
