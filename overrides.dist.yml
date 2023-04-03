@@ -44,6 +44,14 @@ neops_traefik_dashboard_password: SET-ME-PLEASE
 #
 # Version
 #neops_image_tag: latest
+#
+# Plugins
+#
+#neops_plugins:
+# - neops_auth_static_api_key
+# - neops_auth_django # neops_auth_keycloak
+# - neops_cron
+# - neops_reports
 
 # (username is "admin" unless overridden by neops_superuser_name)
 neops_superuser_email: SET-ME-PLEASE
