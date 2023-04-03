@@ -2,11 +2,12 @@
 # Neops Core
 #
 neops_image: quay.io/zebbra/neops-core
-neops_image_tag: latest
+neops_image_tag: develop
 neops_plugins:
   - neops_auth_static_api_key
   - neops_auth_django # neops_auth_keycloak
   - neops_cron
+  - neops_reports
 
 neops_scale_frontend: 1
 neops_scale_worker: 1
