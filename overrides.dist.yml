@@ -43,7 +43,7 @@ neops_traefik_dashboard_password: SET-ME-PLEASE
 # (see roles/neops.core/defaults/main.yml for all variables)
 #
 # Version
-#neops_image_tag: latest
+#neops_image_tag: develop
 #
 # Plugins
 #
